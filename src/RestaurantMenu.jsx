@@ -4,10 +4,15 @@ import {
   Search, Phone, CreditCard, Star, MapPin, KeyRound, DollarSign, Wallet,
   Download, PieChart, Crown, Clock, Bike, Utensils, Trophy, Users, Home, ChevronLeft,
   Percent, ShieldCheck, Headphones, ArrowUpRight, ArrowDownRight, LayoutGrid, CheckCircle2,
-  Navigation, Share2, RefreshCw, MessageCircle
+  Navigation, Share2, RefreshCw, MessageCircle, PlusCircle, TrendingUp
 } from "lucide-react";
 
-// الهوية الجديدة لمطعم مستر سلطع
+// ================= ================= =================
+// 🚀 رقم النسخة للتحكم في الكاش وتحديث المتصفح تلقائياً
+// ================= ================= =================
+const MENU_VERSION = "41.0_SALTA3"; 
+
+// هوية مشروع مستر سلطع
 const RESTAURANT_NAME = "مستر سلطع";
 const TAGLINE = "MR SALTA3 BURGER — سلطعها صح 🍔🔥";
 const ADDRESS = "شربين - شارع المركز - أمام مطعم مية مية";
@@ -17,8 +22,8 @@ const WHATSAPP_NUMBER = "+201021020076";
 const VODAFONE_CASH = "01021020076";
 const INSTAPAY = "salta3@instapay";
 
-const GOOGLE_SHEET_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoJBFVMk_jbmuLC5w59zQko5tYn9NvoZ9iWWPnLyyBMf4u-J6OfArH6JhIU8UK95o/exec";
-const ADMIN_SECRET_KEY = "Adam";
+const GOOGLE_SHEET_SCRIPT_URL = import.meta.env?.VITE_GOOGLE_SHEET_URL || "https://script.google.com/macros/s/AKfycbxoJBFVMk_jbmuLC5w59zQko5tYn9NvoZ9iWWPnLyyBMf4u-J6OfArH6JhIU8UK95o/exec";
+const ADMIN_SECRET_KEY = import.meta.env?.VITE_ADMIN_SECRET_KEY || "Adam";
 
 const DEFAULT_DELIVERY_AREAS = [
   { name: "شربين (داخل البلد)", price: 15 },
@@ -30,13 +35,13 @@ const DEFAULT_DELIVERY_AREAS = [
 ];
 
 const DEFAULT_PROMO_CODES = [
-  { code: "SALTA3", discount: 10 },
-  { code: "BURGER15", discount: 15 }
+  { code: "SALTA3", discount: 10, limit: 0, used: 0 },
+  { code: "BURGER15", discount: 15, limit: 0, used: 0 }
 ];
 
-// قائمة الطعام الكاملة المستخرجة من الصور المرفقة
+// منيو مستر سلطع الكامل بالأسعار والخيارات
 const DEFAULT_MENU = [
-  // --- قسم البرجر ---
+  // البرجر
   { id: "b1", cat: "البرجر", name: "كلاسيك بيف", desc: "خس + طماطم + خيار مخلل + لحم بقري محشو جبن + صوص تكساس + صوص باربيكيو + شيدر", sizes: [{ label: "كلاسيك", price: 100 }, { label: "دبل", price: 170 }] },
   { id: "b2", cat: "البرجر", name: "أمريكان هاووس", desc: "خس + طماطم + خيار مخلل + لحم بقري محشو جبن + بيف بيكون + مشروم + بصل مكرمل + صوص تكساس + صوص باربيكيو + شيدر", sizes: [{ label: "كلاسيك", price: 135 }, { label: "دبل", price: 205 }] },
   { id: "b3", cat: "البرجر", name: "مستر سلطع (سبيشال)", desc: "خس + طماطم + خيار مخلل + لحم بقري محشو جبن + بيف بيكون + مشروم + بصل مكرمل + موتزريلا استيك + حلقات بصل + صوص تكساس + صوص باربيكيو + شيدر", isBestSeller: true, rank: 1, sizes: [{ label: "كلاسيك", price: 160 }, { label: "دبل", price: 230 }] },
@@ -44,7 +49,7 @@ const DEFAULT_MENU = [
   { id: "b5", cat: "البرجر", name: "بيج فاير", desc: "عيش راوند + خس + طماطم + خيار مخلل + فيليه فريش + تركي مدخن + دوريتوس + صوص رانش + صوص شيدر", sizes: [{ label: "كلاسيك", price: 105 }, { label: "دبل", price: 175 }] },
   { id: "b6", cat: "البرجر", name: "ميجا فاير", desc: "خس + طماطم + خيار مخلل + فيليه فريش + تركي مدخن + سلامي + موتزريلا استيك + صوص رانش + صوص شيدر + صوص ألف جزيرة", isBestSeller: true, rank: 2, sizes: [{ label: "كلاسيك", price: 150 }, { label: "دبل", price: 220 }] },
 
-  // --- قسم ركن البيتزا ---
+  // ركن البيتزا
   { id: "p1", cat: "ركن البيتزا", name: "بيتزا مارجريتا", desc: "عجينة بيتزا بخلطة سلطع السحرية بالزبدة + صلصة سلطع + جبنة موتزريلا طبيعي + زعتر", sizes: [{ label: "L", price: 150 }, { label: "XL", price: 200 }] },
   { id: "p2", cat: "ركن البيتزا", name: "بيتزا مكس جبن", desc: "عجينة بيتزا بخلطة سلطع السحرية بالزبدة + صلصة سلطع + جبنة موتزريلا مكس + صوص الشيدر", sizes: [{ label: "L", price: 175 }, { label: "XL", price: 225 }] },
   { id: "p3", cat: "ركن البيتزا", name: "بيتزا تشيكن باربيكيو", desc: "عجينة بيتزا بخلطة سلطع السحرية بالزبدة + صلصة سلطع + جبنة موتزريلا طبيعي + شيش + زنجر + فلفل + زيتون + صوص باربيكيو", sizes: [{ label: "L", price: 215 }, { label: "XL", price: 295 }] },
@@ -54,7 +59,7 @@ const DEFAULT_MENU = [
   { id: "p7", cat: "ركن البيتزا", name: "بيتزا مكس بيف", desc: "عجينة بيتزا بخلطة سلطع السحرية بالزبدة + صلصة سلطع + جبنة موتزريلا طبيعي + مفروم + هوت دوج + ببيروني + فلفل + زيتون", sizes: [{ label: "L", price: 280 }, { label: "XL", price: 340 }] },
   { id: "p8", cat: "ركن البيتزا", name: "إضافة حشو أطراف", desc: "إضافة حشو أطراف غني للبيتزا", price: 80 },
 
-  // --- قسم الكريبات ---
+  // الكريبات
   { id: "c1", cat: "الكريبات", name: "كريب بانيه", desc: "قطع بانيه + شيدر + كاتشب", sizes: [{ label: "عادي", price: 90 }, { label: "كونو", price: 110 }] },
   { id: "c2", cat: "الكريبات", name: "كريب سوبر كرانشي", desc: "استريتس فريش + تركي مدخن + صوص رانش + كاتشب + شيدر", sizes: [{ label: "عادي", price: 120 }, { label: "كونو", price: 140 }] },
   { id: "c3", cat: "الكريبات", name: "كريب زنجر", desc: "استريتس سبايسي + سويت شيلي + صوص شيدر", sizes: [{ label: "عادي", price: 120 }, { label: "كونو", price: 140 }] },
@@ -67,20 +72,20 @@ const DEFAULT_MENU = [
   { id: "c10", cat: "الكريبات", name: "كريب بطاطس", desc: "بطاطس + صوص شيدر", sizes: [{ label: "عادي", price: 70 }, { label: "كونو", price: 90 }] },
   { id: "c11", cat: "الكريبات", name: "كريب مكس تشيز", desc: "جبن موتزريلا طبيعية مكس + صوص شيدر", sizes: [{ label: "عادي", price: 75 }] },
 
-  // --- قسم الباستا ---
+  // الباستا
   { id: "pa1", cat: "الباستا", name: "النجرسكو", desc: "صوص الوايت + ماشروم + مكرونة + قطع فراخ فريش + جبنة موتزريلا", price: 150 },
   { id: "pa2", cat: "الباستا", name: "الفريدوا", desc: "صوص الوايت + ماشروم + مكرونة + قطع فراخ فريش + جبنة رومي + توست", price: 140 },
   { id: "pa3", cat: "الباستا", name: "ماك اند تشيز", desc: "مكرونة غرقانة بصوص الشيدر", price: 100 },
 
-  // --- قسم الساندوتشات ---
+  // الساندوتشات
   { id: "s1", cat: "الساندوتشات", name: "بيج فيلر", desc: "عيش فيلر زبدة + خس + 3 استريس فريش + صوص رانش + أمريكان شيدر + سلامي", price: 120 },
   { id: "s2", cat: "الساندوتشات", name: "بيج تويستر", desc: "عيش تورتيلا + صوص رانش + صوص شيدر + جبنة موتزريلا طبيعي + استريس فريش", price: 95 },
 
-  // --- قسم الريزو ---
+  // الريزو
   { id: "r1", cat: "الريزو", name: "ريزو شيش", desc: "أرز بسمتي + قطع شيش طاووق + صوص الريزو", price: 80 },
   { id: "r2", cat: "الريزو", name: "ريزو تشيكن", desc: "أرز بسمتي + قطع استريس + صوص الريزو", price: 90 },
 
-  // --- قسم المقبلات ---
+  // المقبلات
   { id: "m1", cat: "المقبلات", name: "باكت فرايز", desc: "بطاطس مقرمشة ذهبية", price: 20 },
   { id: "m2", cat: "المقبلات", name: "تشيز فرايز", desc: "بطاطس + صوص شيدر غني", price: 50 },
   { id: "m3", cat: "المقبلات", name: "تشيز تشيكن", desc: "بطاطس + قطع استرس فريش + صوص شيدر + هالبينيو", price: 90 },
@@ -92,7 +97,7 @@ const money = (n) => Number(n || 0).toLocaleString("en-US") + " جنيه";
 const checkRestaurantStatus = () => {
   const nowInEgypt = new Date(new Date().toLocaleString("en-US", { timeZone: "Africa/Cairo" }));
   const hours = nowInEgypt.getHours();
-  const isOpen = hours >= 12 || hours < 3; // يعمل من 12 ظهراً وحتى 3 صباحاً
+  const isOpen = hours >= 12 || hours < 3;
 
   return {
     isOpen,
@@ -115,7 +120,31 @@ const copyTextToClipboard = (text) => {
   return success;
 };
 
+const playSuccessBeep = () => {
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(587.33, audioCtx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.15);
+    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 0.3);
+  } catch (e) {}
+};
+
 export default function Salta3Menu() {
+  const [restaurantName, setRestaurantName] = useState(RESTAURANT_NAME);
+  const [tagline, setTagline] = useState(TAGLINE);
+  const [address, setAddress] = useState(ADDRESS);
+  const [whatsappNumber, setWhatsappNumber] = useState(WHATSAPP_NUMBER);
+  const [vodafoneCash, setVodafoneCash] = useState(VODAFONE_CASH);
+  const [instapay, setInstapay] = useState(INSTAPAY);
+
   const [items, setItems] = useState(DEFAULT_MENU);
   const [activeCat, setActiveCat] = useState("الكل");
   const [searchQuery, setSearchQuery] = useState("");
@@ -133,8 +162,10 @@ export default function Salta3Menu() {
   const [cartOpen, setCartOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
   const [adminTab, setAdminTab] = useState("dashboard");
+  const [copied, setCopied] = useState("");
   const [animateCart, setAnimateCart] = useState(false);
-  const [restaurantStatus] = useState(checkRestaurantStatus());
+  const [activeVisitors, setActiveVisitors] = useState(1);
+  const [restaurantStatus, setRestaurantStatus] = useState(checkRestaurantStatus());
 
   const [trackModalOpen, setTrackModalOpen] = useState(false);
   const [trackQuery, setTrackQuery] = useState("");
@@ -143,27 +174,83 @@ export default function Salta3Menu() {
   const [trackError, setTrackError] = useState("");
 
   const [deliveryAreas, setDeliveryAreas] = useState(DEFAULT_DELIVERY_AREAS);
+  const [newAreaName, setNewAreaName] = useState("");
+  const [newAreaPrice, setNewAreaPrice] = useState("");
+
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerNotes, setCustomerNotes] = useState("");
+  const [geoLink, setGeoLink] = useState("");
+  const [geoLoading, setGeoLinkLoading] = useState(false);
+  
+  const [enteredPromo, setEnteredPromo] = useState("");
+  const [appliedDiscountPercent, setAppliedDiscountPercent] = useState(0);
+  const [promoError, setPromoError] = useState("");
+  
   const [selectedAreaIndex, setSelectedAreaIndex] = useState(-1);
   const [paymentMethod, setPaymentMethod] = useState("cash");
   const [validationError, setValidationError] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [lastCreatedOrderId, setLastCreatedOrderId] = useState("");
 
-  const [enteredPromo, setEnteredPromo] = useState("");
-  const [appliedDiscountPercent, setAppliedDiscountPercent] = useState(0);
-  const [promoError, setPromoError] = useState("");
+  const [scheduleType, setScheduleType] = useState("now"); 
+  const [scheduleTime, setScheduleTime] = useState("");
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminPin] = useState("1234");
+  const [adminPin, setAdminPin] = useState("1234");
   const [pinModalOpen, setPinModalOpen] = useState(false);
   const [enteredPin, setEnteredPin] = useState("");
   const [pinError, setPinError] = useState("");
+  const [logoClicks, setLogoClicks] = useState(0);
+
+  const [reportsData, setReportsData] = useState([]);
+  const [reportsLoading, setReportsLoading] = useState(false);
 
   const findItem = (id) => items.find((i) => i.id === id);
+
+  // ================= ================= =================
+  // 🔄 الفحص الآلي لرقم النسخة ومسح الكاش عند وجود تحديث
+  // ================= ================= =================
+  useEffect(() => {
+    const savedVersion = localStorage.getItem("salta3_app_version");
+    if (savedVersion !== MENU_VERSION) {
+      localStorage.removeItem("salta3-saved-cart");
+      localStorage.setItem("salta3_app_version", MENU_VERSION);
+    }
+
+    const statusTimer = setInterval(() => {
+      setRestaurantStatus(checkRestaurantStatus());
+    }, 10000);
+
+    let visitorId = localStorage.getItem("salta3_visitor_id");
+    if (!visitorId) {
+      visitorId = 'vis_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem("salta3_visitor_id", visitorId);
+    }
+
+    const sendPing = async () => {
+      try {
+        await fetch(GOOGLE_SHEET_SCRIPT_URL, {
+          method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({ action: "ping_visitor", visitorId })
+        });
+        
+        const res = await fetch(GOOGLE_SHEET_SCRIPT_URL + "?type=visitors");
+        const data = await res.json();
+        if (data && data.activeVisitors) setActiveVisitors(data.activeVisitors);
+      } catch (e) {}
+    };
+
+    sendPing();
+    const visitorTimer = setInterval(sendPing, 30000);
+    fetchReportsFromSheetSilent();
+
+    return () => {
+      clearInterval(statusTimer);
+      clearInterval(visitorTimer);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage) {
@@ -222,6 +309,122 @@ export default function Salta3Menu() {
   const discountAmount = useMemo(() => Math.round((cartTotal * appliedDiscountPercent) / 100), [cartTotal, appliedDiscountPercent]);
   const finalTotal = useMemo(() => Math.max(0, cartTotal - discountAmount) + activeDeliveryArea.price, [cartTotal, discountAmount, activeDeliveryArea]);
 
+  const fetchReportsFromSheet = async () => {
+    setReportsLoading(true);
+    try {
+      const res = await fetch(GOOGLE_SHEET_SCRIPT_URL + "?action=orders&adminKey=" + ADMIN_SECRET_KEY);
+      const data = await res.json();
+      let rawOrders = Array.isArray(data) ? data : (data?.orders || []);
+
+      const normalizedOrders = rawOrders.map(row => ({
+        "التاريخ والوقت": row["التاريخ والوقت"] || row["Timestamp"] || "",
+        "رقم الأوردر": row["رقم الأوردر"] || row["Order ID"] || "",
+        "اسم العميل": row["اسم العميل"] || row["Customer Name"] || "عميل",
+        "رقم الموبايل": row["رقم الموبايل"] || row["Phone"] || "",
+        "المنطقة / القرية": row["المنطقة / القرية"] || row["Area"] || "غير محدد",
+        "العنوان بالتفصيل": row["العنوان بالتفصيل"] || row["Address"] || "",
+        "طريقة الدفع": row["طريقة الدفع"] || row["Payment"] || "كاش",
+        "تفاصيل الطلبات": row["تفاصيل الطلبات"] || row["Items"] || "",
+        "الإجمالي النهائي": Number(row["الإجمالي النهائي"] || row["Final Total"] || 0),
+        "حساب الأكل الأصلي": Number(row["حساب الأكل الأصلي"] || 0),
+        "مصاريف التوصيل": Number(row["مصاريف التوصيل"] || 0),
+        "حالة الطلب": row["حالة الطلب"] || row["Status"] || "جديد"
+      }));
+
+      setReportsData(normalizedOrders);
+    } catch (e) {
+    } finally { setReportsLoading(false); }
+  };
+
+  const fetchReportsFromSheetSilent = async () => {
+    try {
+      const res = await fetch(GOOGLE_SHEET_SCRIPT_URL + "?action=orders&adminKey=" + ADMIN_SECRET_KEY);
+      const data = await res.json();
+      let rawOrders = Array.isArray(data) ? data : (data?.orders || []);
+
+      const normalizedOrders = rawOrders.map(row => ({
+        "التاريخ والوقت": row["التاريخ والوقت"] || row["Timestamp"] || "",
+        "رقم الأوردر": row["رقم الأوردر"] || row["Order ID"] || "",
+        "اسم العميل": row["اسم العميل"] || row["Customer Name"] || "عميل",
+        "رقم الموبايل": row["رقم الموبايل"] || row["Phone"] || "",
+        "المنطقة / القرية": row["المنطقة / القرية"] || row["Area"] || "غير محدد",
+        "العنوان بالتفصيل": row["العنوان بالتفصيل"] || row["Address"] || "",
+        "طريقة الدفع": row["طريقة الدفع"] || row["Payment"] || "كاش",
+        "تفاصيل الطلبات": row["تفاصيل الطلبات"] || row["Items"] || "",
+        "الإجمالي النهائي": Number(row["الإجمالي النهائي"] || row["Final Total"] || 0),
+        "حساب الأكل الأصلي": Number(row["حساب الأكل الأصلي"] || 0),
+        "مصاريف التوصيل": Number(row["مصاريف التوصيل"] || 0),
+        "حالة الطلب": row["حالة الطلب"] || row["Status"] || "جديد"
+      }));
+
+      setReportsData(normalizedOrders);
+    } catch (e) {}
+  };
+
+  useEffect(() => { if (adminOpen) fetchReportsFromSheet(); }, [adminOpen]);
+
+  const handleTrackOrder = async () => {
+    const q = trackQuery.trim();
+    if (!q) { setTrackError("اكتب رقم الأوردر أو التليفون."); return; }
+    setTrackLoading(true); setTrackError(""); setTrackedOrderResult(null);
+
+    try {
+      const res = await fetch(GOOGLE_SHEET_SCRIPT_URL + "?action=orders&adminKey=" + ADMIN_SECRET_KEY);
+      const data = await res.json();
+      let ordersList = Array.isArray(data) ? data : (data?.orders || []);
+
+      const found = ordersList.find(o => 
+        String(o["رقم الأوردر"] || "").trim().toLowerCase() === q.toLowerCase() ||
+        String(o["رقم الموبايل"] || "").trim() === q
+      );
+
+      if (found) {
+        setTrackedOrderResult({
+          "رقم الأوردر": found["رقم الأوردر"] || "SALTA3-ORDER",
+          "اسم العميل": found["اسم العميل"] || "عميل",
+          "المنطقة / القرية": found["المنطقة / القرية"] || "",
+          "تفاصيل الطلبات": found["تفاصيل الطلبات"] || "",
+          "الإجمالي النهائي": found["الإجمالي النهائي"] || 0,
+          "حالة الطلب": found["حالة الطلب"] || "جديد"
+        });
+      } else {
+        setTrackError("لم يتم العثور على أوردر بهذا الرقم.");
+      }
+    } catch (e) {
+      setTrackError("حدث خطأ أثناء الاتصال بالنظام.");
+    } finally { setTrackLoading(false); }
+  };
+
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    try {
+      await fetch(GOOGLE_SHEET_SCRIPT_URL, {
+        method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({ action: "update_order_status", adminKey: ADMIN_SECRET_KEY, orderId, status: newStatus })
+      });
+      setReportsData(prev => prev.map(row => String(row["رقم الأوردر"]) === String(orderId) ? { ...row, "حالة الطلب": newStatus } : row));
+    } catch (e) { alert("حدث خطأ أثناء التحديث."); }
+  };
+
+  const handleLogoClickLocal = () => {
+    setLogoClicks(prev => {
+      if (prev + 1 >= 3) { setPinModalOpen(true); return 0; }
+      return prev + 1;
+    });
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) { setValidationError("المتصفح لا يدعم GPS."); return; }
+    setGeoLinkLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setGeoLink("http://maps.google.com/?q=" + pos.coords.latitude + "," + pos.coords.longitude);
+        setCustomerAddress(prev => prev + " [موقع GPS 📍]");
+        setGeoLinkLoading(false);
+      },
+      () => { setValidationError("فشل تحديد الموقع."); setGeoLinkLoading(false); }
+    );
+  };
+
   const handleApplyPromo = () => {
     const codeClean = enteredPromo.trim().toUpperCase();
     if (!codeClean) return;
@@ -230,8 +433,17 @@ export default function Salta3Menu() {
     else { setAppliedDiscountPercent(0); setPromoError("كود الخصم غير صحيح!"); }
   };
 
+  const handleVerifyPin = (e) => {
+    e.preventDefault();
+    if (enteredPin === adminPin) { setIsAdmin(true); setPinModalOpen(false); setEnteredPin(""); setAdminOpen(true); }
+    else setPinError("رمز الأمان خطأ!");
+  };
+
+  const copyText = (label, value) => {
+    if (copyTextToClipboard(value)) { setCopied(label); setTimeout(() => setCopied(""), 2000); }
+  };
+
   const categories = useMemo(() => ["الكل", ...new Set(items.map(i => i.cat))], [items]);
-  const bestSellerItems = useMemo(() => items.filter(item => item.isBestSeller).sort((a,b) => (a.rank || 99) - (b.rank || 99)), [items]);
 
   const visibleItems = useMemo(() => {
     return items.filter(item => {
@@ -242,6 +454,16 @@ export default function Salta3Menu() {
     });
   }, [items, activeCat, searchQuery]);
 
+  const groups = useMemo(() => {
+    const map = new Map();
+    visibleItems.forEach(it => {
+      const key = it.cat || "الأصناف";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(it);
+    });
+    return Array.from(map.entries());
+  }, [visibleItems]);
+
   const sendWhatsApp = async () => {
     if (cartList.length === 0) { setValidationError("السلة فارغة، اختر أصنافك أولاً."); return; }
     if (!customerName.trim()) { setValidationError("من فضلك اكتب اسمك."); return; }
@@ -250,13 +472,29 @@ export default function Salta3Menu() {
     if (selectedAreaIndex === -1) { setValidationError("من فضلك اختر منطقة التوصيل."); return; }
 
     setValidationError("");
+    playSuccessBeep();
+
+    const itemsSummary = cartList.map((i) => i.label + " x" + i.qty).join(" | ");
     const lines = cartList.map((i) => "• " + i.label + " x" + i.qty + " — " + money(i.price * i.qty));
-    const paymentText = paymentMethod === "cash" ? "💵 نقدي (كاش)" : "📱 دفع إلكتروني";
+    const deliveryTimeText = scheduleType === "now" ? "⚡ توصيل فوري" : "🕒 موعد: " + scheduleTime;
+    const paymentText = paymentMethod === "cash" ? "💵 كاش" : "📱 دفع إلكتروني";
     const generatedOrderId = "SALTA3-" + new Date().toISOString().replace(/[-:T]/g, "").slice(0, 10) + "-" + Math.floor(100 + Math.random() * 900);
     setLastCreatedOrderId(generatedOrderId);
 
-    let text = `طلب جديد من مطعم ${RESTAURANT_NAME} 🍔\n\n🆔 رقم الأوردر: ${generatedOrderId}\n👤 العميل: ${customerName}\n📱 الهاتف: ${customerPhone}\n💳 الدفع: ${paymentText}\n📍 المنطقة: ${activeDeliveryArea.name}\n🏠 العنوان: ${customerAddress}\n\nالطلبات:\n${lines.join("\n")}\n\n💵 حساب الأكل: ${money(cartTotal)}\n🛵 التوصيل: ${money(activeDeliveryArea.price)}\n💰 الإجمالي: ${money(finalTotal)}`;
-    window.open("https://wa.me/" + WHATSAPP_NUMBER.replace(/[^\d+]/g, "") + "?text=" + encodeURIComponent(text), "_blank");
+    try {
+      await fetch(GOOGLE_SHEET_SCRIPT_URL, {
+        method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          action: "create_order", clientRequestId: generatedOrderId, customerName: customerName.trim(),
+          customerPhone: customerPhone.trim(), area: activeDeliveryArea.name, address: customerAddress.trim(),
+          geoLink: geoLink || "", paymentMethod: paymentText, schedule: deliveryTimeText, itemsSummary,
+          cartTotal, couponDiscount: discountAmount, deliveryPrice: activeDeliveryArea.price, finalTotal, customerNotes
+        })
+      });
+    } catch (e) {}
+
+    let text = `طلب جديد من مطعم ${restaurantName} 🍔\n\n🆔 رقم الأوردر: ${generatedOrderId}\n👤 العميل: ${customerName}\n📱 الهاتف: ${customerPhone}\n💳 الدفع: ${paymentText}\n📍 المنطقة: ${activeDeliveryArea.name}\n🏠 العنوان: ${customerAddress}\n\nالطلبات:\n${lines.join("\n")}\n\n💵 حساب الأكل: ${money(cartTotal)}\n🛵 التوصيل: ${money(activeDeliveryArea.price)}\n💰 الإجمالي: ${money(finalTotal)}`;
+    window.open("https://wa.me/" + whatsappNumber.replace(/[^\d+]/g, "") + "?text=" + encodeURIComponent(text), "_blank");
 
     setCartOpen(false); setCart({}); setOrderSuccess(true);
   };
@@ -265,36 +503,67 @@ export default function Salta3Menu() {
     <div dir="rtl" className="min-h-screen bg-[#120500] text-white font-['Tajawal'] pb-32">
       {/* Header */}
       <header className="sticky top-0 z-30 bg-[#240A00]/95 backdrop-blur-md border-b border-orange-500/20 px-4 py-3 flex items-center justify-between">
-        <div className="cursor-pointer flex items-center gap-2">
+        <div onClick={handleLogoClickLocal} className="cursor-pointer flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-orange-600 flex items-center justify-center font-black text-xl border-2 border-yellow-400 text-yellow-300 shadow-md">🍔</div>
           <div className="text-right">
-            <span className="text-base font-black text-orange-400 tracking-wider block leading-none">{RESTAURANT_NAME}</span>
+            <span className="text-base font-black text-orange-400 tracking-wider block leading-none">{restaurantName}</span>
             <span className="text-[9px] text-yellow-400/80 font-bold uppercase tracking-widest">MR SALTA3 BURGER</span>
           </div>
         </div>
 
-        <button onClick={() => setCartOpen(true)} className={`p-2 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 relative transition-transform duration-300 ${animateCart ? "scale-125 bg-orange-400 text-black" : ""}`}>
-          <ShoppingCart size={18} />
-          {cartCount > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 text-black text-[9px] font-black rounded-full flex items-center justify-center">{cartCount}</span>}
-        </button>
+        <div className="flex items-center gap-2">
+          {isAdmin && (
+            <button onClick={() => setAdminOpen(true)} className="px-3 py-1.5 rounded-xl border border-yellow-500/50 text-yellow-400 bg-orange-500/20 text-xs font-bold flex items-center gap-1 animate-pulse">
+              <LayoutGrid size={15} /> <span>لوحة التحكم</span>
+            </button>
+          )}
+          <button onClick={() => setCartOpen(true)} className={`p-2 rounded-full bg-orange-500/20 border border-orange-500/40 text-orange-400 relative transition-transform duration-300 ${animateCart ? "scale-125 bg-orange-400 text-black" : ""}`}>
+            <ShoppingCart size={18} />
+            {cartCount > 0 && <span className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 text-black text-[9px] font-black rounded-full flex items-center justify-center">{cartCount}</span>}
+          </button>
+        </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative w-full py-8 bg-gradient-to-b from-[#3B0F00] via-[#240A00] to-[#120500] text-center px-4 space-y-3 border-b border-orange-500/20">
-        <div className="inline-block px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-bold mb-1">
-          {TAGLINE}
+      {/* Quick Contact Bar */}
+      <div className="w-full flex justify-center items-center py-2.5 bg-[#1B0700] border-b border-orange-500/10 sticky top-[57px] z-20 backdrop-blur-md">
+        <div className="flex items-center gap-3 px-4 py-1 rounded-full bg-[#2B0C00] border border-orange-500/20 shadow-inner">
+          <a href={"tel:" + PHONE_1} className="p-2 rounded-full bg-orange-500 text-black transition-transform active:scale-95 shadow"><Phone size={13} /></a>
+          <span className="h-3.5 w-[1px] bg-white/20" />
+          <a href={"https://wa.me/" + whatsappNumber.replace(/[^\d+]/g, "")} target="_blank" rel="noopener noreferrer" className="p-2 rounded-full bg-[#25D366] text-white transition-transform active:scale-95 shadow"><MessageCircle size={13} /></a>
+          <span className="h-3.5 w-[1px] bg-white/20" />
+          <button onClick={() => copyTextToClipboard(window.location.href)} title="شارك المنيو" className="p-2 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 transition-transform active:scale-95 shadow flex items-center justify-center"><Share2 size={13} /></button>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-yellow-400 tracking-wide drop-shadow-md">{RESTAURANT_NAME}</h1>
-        <p className="text-xs sm:text-sm text-gray-300 font-bold max-w-md mx-auto">{ADDRESS}</p>
+      </div>
+
+      {/* Hero Header */}
+      <section className="relative w-full py-8 bg-gradient-to-b from-[#3B0F00] via-[#240A00] to-[#120500] text-center px-4 space-y-3 border-b border-orange-500/20">
+        <div className="inline-block px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/30 text-orange-400 text-xs font-bold mb-1">{tagline}</div>
+        <h1 className="text-3xl sm:text-5xl font-black text-yellow-400 tracking-wide drop-shadow-md">{restaurantName}</h1>
+        <p className="text-xs sm:text-sm text-gray-300 font-bold max-w-md mx-auto">{address}</p>
         
-        <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-[11px] font-bold">
-          <a href={`tel:${PHONE_1}`} className="px-3 py-1 rounded-full bg-orange-600/30 border border-orange-500/40 text-yellow-300 flex items-center gap-1"><Phone size={12}/> {PHONE_1}</a>
-          <a href={`tel:${PHONE_2}`} className="px-3 py-1 rounded-full bg-orange-600/30 border border-orange-500/40 text-yellow-300 flex items-center gap-1"><Phone size={12}/> {PHONE_2}</a>
+        <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-[10px] font-bold">
+          <span className="px-3 py-1 rounded-full bg-black/60 border border-white/10 text-emerald-400 flex items-center gap-1">{restaurantStatus.text}</span>
+          <span className="px-3 py-1 rounded-full bg-black/60 border border-white/10 text-gray-200 flex items-center gap-1"><Bike size={12} className="text-orange-400" /> توصيل سريع</span>
+          <span className="px-3 py-1 rounded-full bg-black/60 border border-white/10 text-gray-200 flex items-center gap-1"><Clock size={12} className="text-orange-400" /> {restaurantStatus.timeText}</span>
         </div>
       </section>
 
+      {/* Order Tracking Banner */}
+      <div className="max-w-3xl mx-auto px-4 pt-4">
+        <div onClick={() => setTrackModalOpen(true)} className="w-full bg-gradient-to-r from-orange-600/20 via-[#2B0C00] to-orange-500/10 border border-orange-500/30 rounded-2xl p-3 flex items-center justify-between cursor-pointer hover:border-orange-400 transition-all shadow-md group">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-xl bg-orange-500 text-black font-black group-hover:scale-110 transition-transform"><Bike size={16} /></div>
+            <div>
+              <p className="text-xs font-black text-yellow-400">تتبع حالة طلبك لحظياً 🛵</p>
+              <p className="text-[10px] text-gray-300">اضغط هنا واكتب رقم الأوردر أو تليفونك لمتابعة الأوردر</p>
+            </div>
+          </div>
+          <button className="px-3 py-1.5 rounded-xl bg-orange-500 text-black text-xs font-black flex items-center gap-1 shadow"><span>تتبع الآن</span><ChevronLeft size={14} /></button>
+        </div>
+      </div>
+
       {/* Categories Bar */}
-      <nav className="sticky top-[61px] z-20 bg-[#120500]/95 backdrop-blur-md border-b border-orange-500/20 py-3 px-4">
+      <nav className="sticky top-[100px] z-20 bg-[#120500]/95 backdrop-blur-md border-y border-orange-500/20 py-3 px-4 mt-4">
         <div className="max-w-3xl mx-auto flex gap-2 overflow-x-auto no-scrollbar">
           {categories.map((c) => (
             <button key={c} onClick={() => setActiveCat(c)} className={`px-5 py-2 rounded-2xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 ${activeCat === c ? "bg-gradient-to-r from-orange-500 to-yellow-500 text-black shadow-lg shadow-orange-500/20" : "bg-[#240A00] text-gray-300 border border-orange-500/10 hover:bg-white/5"}`}>
@@ -310,56 +579,68 @@ export default function Salta3Menu() {
         <div className="relative">
           <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="ابحث عن برجر، بيتزا، كريب، باستا..." className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-[#1D0800] border border-orange-500/20 text-xs text-white focus:outline-none focus:border-orange-400" />
           <Search size={15} className="absolute right-3.5 top-3 text-orange-400" />
+          {searchQuery && <button onClick={() => setSearchQuery("")} className="absolute left-3 top-2.5 p-1 rounded-full text-gray-400"><X size={14} /></button>}
         </div>
       </div>
 
-      {/* Menu List */}
+      {/* Menu List Groups */}
       <main className="max-w-3xl mx-auto px-4 pt-6 space-y-6">
-        {visibleItems.map((item) => (
-          <div key={item.id} className="bg-[#1D0800] border border-orange-500/20 rounded-3xl p-4 flex flex-col justify-between shadow-md hover:border-orange-500/40 transition-all">
-            <div className="space-y-1">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-black text-yellow-400">{item.name}</h3>
-                {item.isBestSeller && <span className="text-[9px] px-2 py-0.5 rounded-full bg-orange-600 text-white font-black">🔥 الأكثر طلباً</span>}
-              </div>
-              {item.desc && <p className="text-[11px] text-gray-300 leading-relaxed">{item.desc}</p>}
-            </div>
+        {groups.map(([category, itemsList]) => (
+          <div key={category} className="space-y-3">
+            <h2 className="text-xs font-black text-yellow-400 uppercase tracking-wide flex items-center gap-2">
+              <span className="w-1.5 h-3 rounded-full bg-orange-500" />
+              <span>{category}</span>
+            </h2>
 
-            <div className="mt-3 pt-2 border-t border-orange-500/10 space-y-2">
-              {item.sizes ? (
-                item.sizes.map((sz) => {
-                  const key = item.id + "::" + sz.label;
-                  const qty = cart[key] || 0;
-                  return (
-                    <div key={sz.label} className="flex items-center justify-between text-xs bg-[#2B0C00] p-2 px-3 rounded-xl border border-orange-500/10">
-                      <span className="text-gray-200 font-bold">{sz.label}</span>
-                      <span className="text-yellow-400 font-black text-xs">{money(sz.price)}</span>
-                      {qty > 0 ? (
-                        <div className="flex items-center gap-2">
-                          <button onClick={() => addToCart(key, -1)} className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center"><Minus size={10} /></button>
-                          <span className="font-black text-white text-xs">{qty}</span>
-                          <button onClick={() => addToCart(key, 1)} className="w-5 h-5 rounded-full bg-orange-500 text-black flex items-center justify-center font-bold"><Plus size={10} /></button>
-                        </div>
-                      ) : (
-                        <button onClick={() => addToCart(key, 1)} className="p-1.5 rounded-full bg-orange-500 text-black font-black active:scale-95"><Plus size={12} /></button>
-                      )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {itemsList.map((item) => (
+                <div key={item.id} className="bg-[#1D0800] border border-orange-500/20 rounded-3xl p-4 flex flex-col justify-between shadow-md hover:border-orange-500/40 transition-all">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-black text-yellow-400">{item.name}</h3>
+                      {item.isBestSeller && <span className="text-[9px] px-2 py-0.5 rounded-full bg-orange-600 text-white font-black">🔥 الأكثر طلباً</span>}
                     </div>
-                  );
-                })
-              ) : (
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-yellow-400">{money(item.price)}</span>
-                  {cart[item.id] > 0 ? (
-                    <div className="flex items-center gap-2 bg-[#2B0C00] px-2.5 py-1 rounded-full border border-orange-500/10">
-                      <button onClick={() => addToCart(item.id, -1)} className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center"><Minus size={10} /></button>
-                      <span className="font-bold text-xs">{cart[item.id]}</span>
-                      <button onClick={() => addToCart(item.id, 1)} className="w-5 h-5 rounded-full bg-orange-500 text-black flex items-center justify-center font-bold"><Plus size={10} /></button>
-                    </div>
-                  ) : (
-                    <button onClick={() => addToCart(item.id, 1)} className="p-2 rounded-full bg-orange-500 text-black active:scale-95"><Plus size={13} /></button>
-                  )}
+                    {item.desc && <p className="text-[11px] text-gray-300 leading-relaxed">{item.desc}</p>}
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-orange-500/10 space-y-2">
+                    {item.sizes ? (
+                      item.sizes.map((sz) => {
+                        const key = item.id + "::" + sz.label;
+                        const qty = cart[key] || 0;
+                        return (
+                          <div key={sz.label} className="flex items-center justify-between text-xs bg-[#2B0C00] p-2 px-3 rounded-xl border border-orange-500/10">
+                            <span className="text-gray-200 font-bold">{sz.label}</span>
+                            <span className="text-yellow-400 font-black text-xs">{money(sz.price)}</span>
+                            {qty > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <button onClick={() => addToCart(key, -1)} className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center"><Minus size={10} /></button>
+                                <span className="font-black text-white text-xs">{qty}</span>
+                                <button onClick={() => addToCart(key, 1)} className="w-5 h-5 rounded-full bg-orange-500 text-black flex items-center justify-center font-bold"><Plus size={10} /></button>
+                              </div>
+                            ) : (
+                              <button onClick={() => addToCart(key, 1)} className="p-1.5 rounded-full bg-orange-500 text-black font-black active:scale-95"><Plus size={12} /></button>
+                            )}
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-black text-yellow-400">{money(item.price)}</span>
+                        {cart[item.id] > 0 ? (
+                          <div className="flex items-center gap-2 bg-[#2B0C00] px-2.5 py-1 rounded-full border border-orange-500/10">
+                            <button onClick={() => addToCart(item.id, -1)} className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center"><Minus size={10} /></button>
+                            <span className="font-bold text-xs">{cart[item.id]}</span>
+                            <button onClick={() => addToCart(item.id, 1)} className="w-5 h-5 rounded-full bg-orange-500 text-black flex items-center justify-center font-bold"><Plus size={10} /></button>
+                          </div>
+                        ) : (
+                          <button onClick={() => addToCart(item.id, 1)} className="p-2 rounded-full bg-orange-500 text-black active:scale-95"><Plus size={13} /></button>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+              ))}
             </div>
           </div>
         ))}
@@ -378,12 +659,50 @@ export default function Salta3Menu() {
         </div>
       )}
 
-      {/* Cart Drawer Modal */}
+      {/* Track Order Modal */}
+      {trackModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" dir="rtl">
+          <div className="w-full max-w-md bg-[#1D0800] border border-orange-500/40 rounded-3xl p-5 space-y-4 shadow-2xl text-white">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <h3 className="text-base font-black text-yellow-400 flex items-center gap-1.5"><Bike size={18} /><span>تتبع حالة طلبك 🔍</span></h3>
+              <button onClick={() => setTrackModalOpen(false)} className="p-1.5 rounded-full bg-white/10 text-gray-300 hover:text-white"><X size={16} /></button>
+            </div>
+            <div className="space-y-3">
+              <p className="text-xs text-gray-300">اكتب رقم الأوردر أو رقم الموبايل:</p>
+              <div className="flex gap-2">
+                <input type="text" placeholder="رقم الأوردر أو الموبايل..." value={trackQuery} onChange={(e) => setTrackQuery(e.target.value)} className="flex-1 p-2.5 rounded-xl bg-[#2B0C00] border border-white/10 text-xs text-white focus:outline-none focus:border-orange-400" />
+                <button onClick={handleTrackOrder} className="px-4 py-2.5 rounded-xl bg-orange-500 text-black font-black text-xs">{trackLoading ? "جاري..." : "بحث"}</button>
+              </div>
+              {trackError && <p className="text-[10px] text-red-400 font-bold bg-red-500/10 p-2 rounded-lg">{trackError}</p>}
+            </div>
+            {trackedOrderResult && (
+              <div className="p-4 rounded-2xl bg-[#2B0C00] border border-orange-500/30 space-y-3 text-xs">
+                <div className="flex justify-between items-center border-b border-white/10 pb-2">
+                  <div><span className="text-[10px] text-gray-400 block">رقم الطلب:</span><span className="font-black text-yellow-400">{trackedOrderResult["رقم الأوردر"]}</span></div>
+                  <div><span className="px-2.5 py-1 rounded-full bg-orange-500/20 text-yellow-300 font-black border border-orange-500/30 text-[11px]">{trackedOrderResult["حالة الطلب"]}</span></div>
+                </div>
+                <div className="space-y-1 text-gray-300">
+                  <p>👤 العميل: <span className="font-bold text-white">{trackedOrderResult["اسم العميل"]}</span></p>
+                  <p>📍 المنطقة: <span className="font-bold text-white">{trackedOrderResult["المنطقة / القرية"]}</span></p>
+                  <p>🛍️ الأصناف: <span className="font-bold text-white">{trackedOrderResult["تفاصيل الطلبات"]}</span></p>
+                  <p>💰 الإجمالي: <span className="font-bold text-yellow-400">{money(trackedOrderResult["الإجمالي النهائي"])}</span></p>
+                </div>
+              </div>
+            )}
+            <button onClick={() => setTrackModalOpen(false)} className="w-full py-2.5 rounded-xl bg-white/10 text-gray-300 hover:text-white text-xs font-bold">إغلاق</button>
+          </div>
+        </div>
+      )}
+
+      {/* Cart Modal */}
       {cartOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end justify-center p-0">
           <div className="relative z-10 w-full max-w-lg bg-[#120500] border-t border-orange-500/30 rounded-t-3xl p-5 space-y-4 max-h-[85vh] overflow-y-auto shadow-2xl" dir="rtl">
             <div className="flex items-center justify-between border-b border-orange-500/20 pb-3">
-              <h3 className="text-base font-black text-yellow-400 flex items-center gap-1.5"><ShoppingCart size={18} /><span>سلة الطلبات ({cartCount})</span></h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-black text-yellow-400 flex items-center gap-1.5"><ShoppingCart size={18} /><span>سلة الطلبات ({cartCount})</span></h3>
+                {cartCount > 0 && (<button onClick={handleClearCart} className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500/20 flex items-center gap-1 text-[10px] font-bold"><Trash2 size={13} /><span>تصفير</span></button>)}
+              </div>
               <button onClick={() => setCartOpen(false)} className="px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 text-xs font-bold"><X size={14} /></button>
             </div>
 
@@ -400,6 +719,19 @@ export default function Salta3Menu() {
               ))}
             </div>
 
+            <div className="space-y-1 pt-2 border-t border-orange-500/10 text-xs">
+              <div className="flex justify-between text-gray-300"><span>حساب الأكل:</span><span>{money(cartTotal)}</span></div>
+              {discountAmount > 0 && <div className="flex justify-between text-emerald-400"><span>خصم الكوبون (-{appliedDiscountPercent}%):</span><span>-{money(discountAmount)}</span></div>}
+              <div className="flex justify-between text-gray-300"><span>التوصيل:</span><span>{money(activeDeliveryArea.price)}</span></div>
+              <div className="flex justify-between pt-2 text-sm font-black border-t border-orange-500/10"><span>الإجمالي النهائي:</span><span className="text-yellow-400 text-base">{money(finalTotal)}</span></div>
+            </div>
+
+            <div className="flex gap-2">
+              <input type="text" placeholder="كوبون خصم؟" value={enteredPromo} onChange={e => setEnteredPromo(e.target.value)} className="flex-1 px-3 py-1.5 rounded-xl bg-[#2B0C00] border border-orange-500/20 text-xs text-white uppercase" />
+              <button onClick={handleApplyPromo} className="px-3 py-1.5 rounded-xl bg-orange-500/20 border border-orange-500/40 text-yellow-300 font-bold text-xs">تطبيق</button>
+            </div>
+            {promoError && <p className="text-[10px] text-red-400 font-bold">{promoError}</p>}
+
             <div className="space-y-2 pt-2 border-t border-orange-500/20 text-xs">
               <input type="text" placeholder="اسمك الكريم..." value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full p-2.5 rounded-xl bg-[#2B0C00] border border-orange-500/20 text-white" />
               <input type="tel" placeholder="رقم تليفونك..." value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full p-2.5 rounded-xl bg-[#2B0C00] border border-orange-500/20 text-white" />
@@ -409,7 +741,31 @@ export default function Salta3Menu() {
                 {deliveryAreas.map((a, i) => <option key={i} value={i}>{a.name} (+{money(a.price)})</option>)}
               </select>
 
-              <input type="text" placeholder="العنوان بالتفصيل..." value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} className="w-full p-2.5 rounded-xl bg-[#2B0C00] border border-orange-500/20 text-white" />
+              <div className="flex gap-1.5">
+                <input type="text" placeholder="العنوان بالتفصيل..." value={customerAddress} onChange={e => setCustomerAddress(e.target.value)} className="flex-1 p-2.5 rounded-xl bg-[#2B0C00] border border-orange-500/20 text-white" />
+                <button type="button" onClick={handleGetLocation} className="px-3 rounded-xl bg-orange-500/20 border border-orange-500/40 text-yellow-300 flex items-center justify-center">{geoLoading ? "..." : <Navigation size={15} />}</button>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                <p className="text-[11px] font-bold text-yellow-400">طريقة الدفع:</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button type="button" onClick={() => setPaymentMethod("cash")} className={`py-2 rounded-xl border text-[10px] font-bold ${paymentMethod === "cash" ? "bg-orange-500 text-black border-orange-400" : "border-white/10 text-gray-300 bg-[#2B0C00]"}`}>💵 كاش</button>
+                  <button type="button" onClick={() => setPaymentMethod("electronic")} className={`py-2 rounded-xl border text-[10px] font-bold ${paymentMethod === "electronic" ? "bg-orange-500 text-black border-orange-400" : "border-white/10 text-gray-300 bg-[#2B0C00]"}`}>📱 دفع إلكتروني</button>
+                </div>
+
+                {paymentMethod === "electronic" && (
+                  <div className="p-3.5 rounded-2xl bg-black/60 border border-orange-500/40 space-y-2 text-[11px]">
+                    <div className="flex items-center justify-between p-2 rounded-xl bg-[#2B0C00]">
+                      <span>فودافون كاش: <strong dir="ltr">{vodafoneCash}</strong></span>
+                      <button type="button" onClick={() => copyText("voda", vodafoneCash)} className="text-yellow-400">{copied === "voda" ? "تم النسخ" : "نسخ"}</button>
+                    </div>
+                    <div className="flex items-center justify-between p-2 rounded-xl bg-[#2B0C00]">
+                      <span>InstaPay: <strong dir="ltr">{instapay}</strong></span>
+                      <button type="button" onClick={() => copyText("insta", instapay)} className="text-yellow-400">{copied === "insta" ? "تم النسخ" : "نسخ"}</button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             {validationError && <p className="text-xs text-red-400 text-center font-bold bg-red-500/10 py-1.5 rounded-lg">{validationError}</p>}
@@ -417,6 +773,148 @@ export default function Salta3Menu() {
             <button onClick={sendWhatsApp} className="w-full py-3.5 rounded-xl bg-[#25D366] text-white font-black text-xs flex items-center justify-center gap-2 active:scale-98 shadow-lg">
               <MessageCircle size={18} /> تأكيد وإرسال عبر واتساب
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Panel Modal */}
+      {adminOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-2 sm:p-4 overflow-y-auto" dir="rtl">
+          <div className="w-full max-w-6xl max-h-[96vh] rounded-3xl border border-orange-500/20 shadow-2xl flex flex-col overflow-hidden bg-[#120500] text-white">
+            <div className="px-5 py-3.5 border-b border-orange-500/20 flex items-center justify-between bg-[#240A00]">
+              <div>
+                <h2 className="text-base font-black text-yellow-400 flex items-center gap-1.5">
+                  <span>لوحة تحكم مستر سلطع</span>
+                  <span className="text-[9px] px-2 py-0.5 rounded-md bg-orange-500/20 text-yellow-300 font-bold border border-orange-500/30">Enterprise v40.0</span>
+                </h2>
+                <p className="text-[10px] text-gray-400">إدارة التقارير والمنيو والطلبات</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={fetchReportsFromSheet} className="px-3 py-1.5 rounded-xl border border-orange-500/30 text-yellow-400 bg-orange-500/10 text-xs font-bold flex items-center gap-1">
+                  <RefreshCw size={13} className={reportsLoading ? "animate-spin" : ""} />
+                  <span>تحديث</span>
+                </button>
+                <button onClick={() => setAdminOpen(false)} className="p-2 rounded-full border border-white/10 text-gray-400 hover:text-white"><X size={18} /></button>
+              </div>
+            </div>
+
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+              <div className="w-full md:w-56 border-b md:border-b-0 md:border-l border-orange-500/20 p-3 bg-[#1B0700] flex md:flex-col gap-1 overflow-x-auto shrink-0">
+                <button onClick={() => setAdminTab("dashboard")} className={`w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold ${adminTab === "dashboard" ? "bg-orange-500 text-black" : "text-gray-400"}`}>الرئيسية والتقارير</button>
+                <button onClick={() => setAdminTab("items")} className={`w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold ${adminTab === "items" ? "bg-orange-500 text-black" : "text-gray-400"}`}>المنيو والأسعار</button>
+                <button onClick={() => setAdminTab("delivery")} className={`w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold ${adminTab === "delivery" ? "bg-orange-500 text-black" : "text-gray-400"}`}>مناطق الدليفري</button>
+                <button onClick={() => setAdminTab("settings")} className={`w-full text-right px-3 py-2.5 rounded-xl text-xs font-bold ${adminTab === "settings" ? "bg-orange-500 text-black" : "text-gray-400"}`}>إعدادات النظام</button>
+              </div>
+
+              <div className="flex-1 p-4 overflow-y-auto space-y-5 bg-[#120500]">
+                {adminTab === "dashboard" && (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                      <div className="p-3.5 rounded-2xl bg-[#2B0C00] border border-orange-500/20">
+                        <span className="text-gray-400 text-xs block">الزوار النشطون</span>
+                        <span className="text-xl font-black text-yellow-400">{activeVisitors} زائر 🟢</span>
+                      </div>
+                      <div className="p-3.5 rounded-2xl bg-[#2B0C00] border border-orange-500/20">
+                        <span className="text-gray-400 text-xs block">إجمالي الطلبات</span>
+                        <span className="text-xl font-black text-white">{reportsData.length} أوردر</span>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-2xl bg-[#2B0C00] border border-orange-500/20 space-y-3">
+                      <h3 className="text-xs font-bold text-yellow-400">سجل الأوردرات والحالات الحية</h3>
+                      <div className="space-y-2 max-h-80 overflow-y-auto">
+                        {reportsData.slice().reverse().map((row, idx) => (
+                          <div key={idx} className="p-3 rounded-xl bg-[#1D0800] border border-white/5 text-xs flex flex-col sm:flex-row justify-between gap-2">
+                            <div>
+                              <p className="font-bold text-yellow-400">{row["رقم الأوردر"]} - {row["اسم العميل"]} ({row["رقم الموبايل"]})</p>
+                              <p className="text-[10px] text-gray-400">📍 {row["المنطقة / القرية"]} | {row["تفاصيل الطلبات"]}</p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-orange-400">{money(row["الإجمالي النهائي"])}</span>
+                              <button onClick={() => handleUpdateStatus(row["رقم الأوردر"], "تم التسليم")} className="px-2 py-1 rounded bg-emerald-600 text-white text-[10px]">تسليم ✅</button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {adminTab === "items" && (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <p className="font-bold text-sm text-yellow-400">إدارة الأطعمة والأسعار</p>
+                      <button onClick={() => setItems([...items, { id: "n" + Date.now(), cat: "البرجر", name: "صنف جديد", price: 50 }])} className="px-3 py-1.5 rounded-xl bg-orange-500 text-black font-bold text-xs flex items-center gap-1"><PlusCircle size={14} /> إضافة صنف</button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {items.map((item) => (
+                        <div key={item.id} className="p-3 rounded-2xl bg-[#2B0C00] border border-orange-500/10 flex justify-between items-center text-xs">
+                          <div>
+                            <p className="font-bold text-white">{item.name}</p>
+                            <p className="text-gray-400">{item.sizes ? item.sizes.map(s => s.label + ": " + money(s.price)).join(" / ") : money(item.price)}</p>
+                          </div>
+                          <button onClick={() => setItems(items.filter(i => i.id !== item.id))} className="text-red-400 p-2"><Trash2 size={14} /></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {adminTab === "delivery" && (
+                  <div className="space-y-3">
+                    <p className="font-bold text-sm text-yellow-400">إدارة مناطق التوصيل</p>
+                    <div className="flex gap-2">
+                      <input type="text" placeholder="اسم المنطقة..." value={newAreaName} onChange={e => setNewAreaName(e.target.value)} className="flex-1 p-2 rounded-xl bg-[#2B0C00] text-xs text-white" />
+                      <input type="number" placeholder="السعر..." value={newAreaPrice} onChange={e => setNewAreaPrice(e.target.value)} className="w-24 p-2 rounded-xl bg-[#2B0C00] text-xs text-white" />
+                      <button onClick={() => { if(newAreaName && newAreaPrice) setDeliveryAreas([...deliveryAreas, { name: newAreaName, price: Number(newAreaPrice) }]); setNewAreaName(""); setNewAreaPrice(""); }} className="px-4 bg-orange-500 text-black font-bold rounded-xl text-xs">إضافة</button>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {deliveryAreas.map((area, i) => (
+                        <div key={i} className="flex justify-between p-2.5 bg-[#2B0C00] rounded-xl text-xs">
+                          <span>{area.name} ({money(area.price)})</span>
+                          <button onClick={() => setDeliveryAreas(deliveryAreas.filter((_, idx) => idx !== i))} className="text-red-400"><Trash2 size={12} /></button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {adminTab === "settings" && (
+                  <div className="space-y-3 max-w-lg text-xs">
+                    <label className="block space-y-1"><span>اسم المطعم:</span><input value={restaurantName} onChange={e => setRestaurantName(e.target.value)} className="w-full p-2.5 bg-[#2B0C00] rounded-xl text-white" /></label>
+                    <label className="block space-y-1"><span>رقم واتساب:</span><input value={whatsappNumber} onChange={e => setWhatsappNumber(e.target.value)} className="w-full p-2.5 bg-[#2B0C00] rounded-xl text-white" dir="ltr" /></label>
+                    <label className="block space-y-1"><span>فودافون كاش:</span><input value={vodafoneCash} onChange={e => setVodafoneCash(e.target.value)} className="w-full p-2.5 bg-[#2B0C00] rounded-xl text-white" dir="ltr" /></label>
+                    <label className="block space-y-1"><span>PIN الأدمين:</span><input value={adminPin} onChange={e => setAdminPin(e.target.value)} className="w-full p-2.5 bg-[#2B0C00] rounded-xl text-white" dir="ltr" /></label>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admin Pin Modal */}
+      {pinModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <form onSubmit={handleVerifyPin} className="bg-[#1D0800] border border-orange-500/30 p-5 rounded-3xl space-y-3 w-full max-w-xs text-center">
+            <KeyRound size={32} className="mx-auto text-yellow-400" />
+            <h3 className="text-sm font-bold text-white">دخول إدارة مستر سلطع</h3>
+            <input type="password" placeholder="••••" value={enteredPin} onChange={e => setEnteredPin(e.target.value)} className="w-full p-2 text-center rounded-xl bg-[#2B0C00] text-white text-lg border border-white/10" />
+            {pinError && <p className="text-[10px] text-red-400 font-bold">{pinError}</p>}
+            <button type="submit" className="w-full py-2 rounded-xl bg-orange-500 text-black font-black text-xs">دخول</button>
+          </form>
+        </div>
+      )}
+
+      {/* Order Success Modal */}
+      {orderSuccess && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" dir="rtl">
+          <div className="bg-[#1D0800] border border-orange-500/30 p-6 rounded-3xl text-center space-y-4 max-w-sm w-full">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto text-2xl">✓</div>
+            <h3 className="text-base font-black text-white">تم إرسال الطلب بنجاح! 🎉</h3>
+            <p className="text-xs text-gray-300">رقم الأوردر لمتابعته:</p>
+            <div className="p-3 rounded-2xl bg-[#2B0C00] border border-orange-500/40 font-black text-yellow-400 text-sm">{lastCreatedOrderId}</div>
+            <button onClick={() => setOrderSuccess(false)} className="w-full py-2.5 rounded-xl bg-orange-500 text-black font-black text-xs">تم</button>
           </div>
         </div>
       )}
