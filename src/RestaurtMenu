@@ -918,6 +918,4 @@ export default function Salta3Menu() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
+    
